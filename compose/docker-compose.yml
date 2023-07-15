@@ -1,0 +1,16 @@
+services:
+  web:
+    image: gptreader:lastest
+    environment:
+      CF_ACCESS_CLIENT_ID: ${CF_ACCESS_CLIENT_ID}
+      CF_ACCESS_CLIENT_SECRET: ${CF_ACCESS_CLIENT_SECRET}
+      PHANTOMJSCLOUD_API_KEY: ${PHANTOMJSCLOUD_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SLACK_TOKEN: ${SLACK_TOKEN}
+      SLACK_SIGNING_SECRET: ${SLACK_SIGNING_SECRET}
+      SPEECH_KEY: ${SPEECH_KEY}
+      SPEECH_REGION: ${SPEECH_REGION}
+      SLACK_USERS: ${SLACK_USERS}
+    ports:
+      - ${PORT}:8080
+    network_mode: "bridge"

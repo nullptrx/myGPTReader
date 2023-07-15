@@ -43,7 +43,7 @@ def get_description(entry):
     try:
         gpt_answer = get_summary_from_gpt(entry.link)
     except Exception as e:
-        logging.error(e)
+        logging.error(e, exc_info=True)
     if gpt_answer is not None:
         summary = 'AI: ' + gpt_answer
     else:

@@ -7,11 +7,18 @@ import requests
 
 CF_ACCESS_CLIENT_ID = os.environ.get('CF_ACCESS_CLIENT_ID')
 CF_ACCESS_CLIENT_SECRET = os.environ.get('CF_ACCESS_CLIENT_SECRET')
+SLACK_USERS = os.environ.get('SLACK_USERS')
+
 
 def update_message_token_usage(user_id, message_id, message_type, llm_token_usage=0, embedding_token_usage=0) -> bool:
+    return True
+
+
+def todo_update_message_token_usage(user_id, message_id, message_type, llm_token_usage=0,
+                                    embedding_token_usage=0) -> bool:
     logging.info(f"Updating message token usage for user {user_id} and message {message_id}")
 
-    endpoint_url = "https://api.myreader.io/api/message"
+    endpoint_url = "https://api.2140s.com/api/message"
     headers = {
         'CF-Access-Client-Id': CF_ACCESS_CLIENT_ID,
         'CF-Access-Client-Secret': CF_ACCESS_CLIENT_SECRET,
@@ -37,9 +44,14 @@ def update_message_token_usage(user_id, message_id, message_type, llm_token_usag
         return True
     else:
         return False
-    
+
+
 def get_user(user_id):
-    endpoint_url = f"https://api.myreader.io/api/user/slack/{user_id}"
+    return "Error: Unable to get user"
+
+
+def todo_get_user(user_id):
+    endpoint_url = f"https://api.2140s.com/api/user/slack/{user_id}"
     headers = {
         'CF-Access-Client-Id': CF_ACCESS_CLIENT_ID,
         'CF-Access-Client-Secret': CF_ACCESS_CLIENT_SECRET,
@@ -55,8 +67,13 @@ def get_user(user_id):
             return "Error: Unable to parse JSON response"
     else:
         return f"Error: {response.status_code} - {response.reason}"
-        
+
+
 def is_premium_user(user_id):
+    return user_id in SLACK_USERS
+
+
+def todo_is_premium_user(user_id):
     try:
         user = get_user(user_id)
         if not user:
@@ -68,7 +85,7 @@ def is_premium_user(user_id):
         premium_end_date = user['premium_end_date']
         if not premium_end_date:
             return False
-        
+
         utc_timezone = pytz.timezone('UTC')
         premium_end_datetime = datetime.utcfromtimestamp(int(premium_end_date)).replace(tzinfo=utc_timezone)
         return premium_end_datetime > datetime.utcnow().replace(tzinfo=utc_timezone)

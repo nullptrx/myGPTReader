@@ -55,7 +55,7 @@ def send_daily_news(client, news):
             )
             logging.info(r)
         except Exception as e:
-            logging.error(e)
+            logging.error(e, exc_info=True)
 
 @scheduler.task('cron', id='daily_news_task', hour=1, minute=30)
 def schedule_news():
@@ -130,9 +130,10 @@ def dialog_context_keep_latest(dialog_texts, max_length=1):
 
 def remove_url_from_text(text, urls):
     # only remove youtube url
-    for url in urls:
-        if 'youtube.com' in url or 'youtu.be' in url:
-            text = text.replace('<' + url + '>', '')
+    if urls is not None:
+        for url in urls:
+            if 'youtube.com' in url or 'youtu.be' in url:
+                text = text.replace('<' + url + '>', '')
     return text
 
 def format_dialog_text(text, voicemessage=None):
@@ -157,7 +158,7 @@ def update_token_usage(event, total_llm_model_tokens, total_embedding_model_toke
         if not result:
             logging.error(f"Failed to update message token usage for {message_id}")
     except Exception as e:
-        logging.error(e)
+        logging.error(e, exc_info=True)
 
 def bot_process(event, say, logger):
     user = event["user"]
@@ -187,7 +188,7 @@ def bot_process(event, say, logger):
             f.write(response.content)
             logger.info(f'=====> Downloaded file to save {temp_file_filename}')
             temp_file_md5 = md5(temp_file_filename)
-            file_md5_name = index_cache_file_dir / (temp_file_md5 + '.' + filetype)
+            file_md5_name = temp_file_path / (temp_file_md5 + '.' + filetype)
             if not file_md5_name.exists():
                 logger.info(f'=====> Rename file to {file_md5_name}')
                 temp_file_filename.rename(file_md5_name)
@@ -206,7 +207,7 @@ def bot_process(event, say, logger):
             logger.info(f'=====> Formatted dialog: {dialog}')
             update_thread_history(parent_thread_ts, f'User: {dialog}', urls)
         except Exception as e:
-            logger.error(e)
+            logger.error(e, exc_info=True)
             say(f'<@{user}>, something went wrong, please try again later', thread_ts=thread_ts)
             return
 
@@ -232,7 +233,8 @@ def bot_process(event, say, logger):
     try:
         gpt_response, total_llm_model_tokens, total_embedding_model_tokens = future.result(timeout=300)
         update_token_usage(event, total_llm_model_tokens, total_embedding_model_tokens)
-        update_thread_history(parent_thread_ts, 'chatGPT: %s' % insert_space(f'{gpt_response}'))
+        # update_thread_history(parent_thread_ts, 'ChatGPT: %s' % insert_space(f'{gpt_response}'))
+        update_thread_history(parent_thread_ts, 'ChatGPT: %s' % insert_space(f'{gpt_response}'))
         logger.info(gpt_response)
         if voicemessage is None:
             say(f'<@{user}>, {gpt_response}', thread_ts=thread_ts)
@@ -277,7 +279,7 @@ def log_message(logger, event, say):
         else:
             say(f'This feature is exclusive to Premium users. To chat with the bot directly, please subscribe to our Premium plan to support our service. You can find the payment link by clicking on the bot and selecting the Home tab.', thread_ts=event["ts"])
     except Exception as e:
-        logger.error(f"Error responding to direct message: {e}")
+        logger.error(f"Error responding to direct message: {e}", exc_info=True)
 
 @slack_app.event(event="team_join")
 def send_welcome_message(logger, event):

@@ -31,5 +31,5 @@ def get_language_code(text):
     try:
         return detect(text).split('-')[0]
     except Exception as e:
-        logging.error(e)
+        logging.error(e, exc_info=True)
         return 'zh'
