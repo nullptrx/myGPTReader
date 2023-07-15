@@ -16,7 +16,7 @@ PHANTOMJSCLOUD_WEBSITES = ['https://twitter.com/', 'https://t.co/', 'https://med
                            'https://us12.campaign-archive.com', 'https://news.ycombinator.com',
                            'https://www.bloomberg.com', 'https://*.substack.com/*', 'https://*.1point3acres.com/*',
                            'https://www.v2ex.com', 'https://www.producthunt.com', 'http://xueqiu.com',
-                           'https://www.jisilu.cn', 'https://www.163.com', "https://*.10jqka.com.cn/*"]
+                           'https://www.jisilu.cn', 'https://www.163.com']
 
 
 def check_if_need_use_phantomjscloud(url):

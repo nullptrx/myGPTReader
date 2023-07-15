@@ -236,12 +236,13 @@ def bot_process(event, say, logger):
         # update_thread_history(parent_thread_ts, 'ChatGPT: %s' % insert_space(f'{gpt_response}'))
         update_thread_history(parent_thread_ts, 'ChatGPT: %s' % insert_space(f'{gpt_response}'))
         logger.info(gpt_response)
-        if voicemessage is None:
-            say(f'<@{user}>, {gpt_response}', thread_ts=thread_ts)
-        else:
-            voice_file_path = get_voice_file_from_text(str(gpt_response))
-            logger.info(f'=====> Voice file path is {voice_file_path}')
-            slack_app.client.files_upload_v2(file=voice_file_path, channel=channel, thread_ts=parent_thread_ts)
+        say(f'<@{user}>, {gpt_response}', thread_ts=thread_ts)
+        # if voicemessage is None:
+        #     say(f'<@{user}>, {gpt_response}', thread_ts=thread_ts)
+        # else:
+        #     voice_file_path = get_voice_file_from_text(str(gpt_response))
+        #     logger.info(f'=====> Voice file path is {voice_file_path}')
+        #     slack_app.client.files_upload_v2(file=voice_file_path, channel=channel, thread_ts=parent_thread_ts)
     except concurrent.futures.TimeoutError:
         future.cancel()
         err_msg = 'Task timedout(5m) and was canceled.'
